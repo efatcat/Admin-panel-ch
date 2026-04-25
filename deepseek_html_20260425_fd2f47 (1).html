@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Управление доступом</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #eef2f5;
+            font-family: 'Times New Roman', 'Unbounded', Georgia, 'Cambria', serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .admin-panel {
+            background: #ffffff;
+            width: 100%;
+            max-width: 380px;
+            border: 1px solid #cacfd9;
+            padding: 1.8rem 2rem 2rem 2rem;
+            box-shadow: none;
+            border-radius: 0px;
+        }
+
+        .admin-panel h1 {
+            font-size: 1.9rem;
+            font-weight: 500;
+            letter-spacing: 0px;
+            color: #1e2a36;
+            border-bottom: 1px solid #dce3ea;
+            padding-bottom: 0.65rem;
+            margin-bottom: 1.6rem;
+            font-family: inherit;
+            text-align: center;
+            font-weight: normal;
+        }
+
+        .input-group {
+            margin-bottom: 1.3rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            text-transform: none;
+            font-weight: normal;
+            color: #2c3e40;
+            margin-bottom: 0.35rem;
+            font-family: inherit;
+        }
+
+        .input-group input {
+            padding: 8px 10px;
+            font-family: 'Times New Roman', 'Unbounded', monospace;
+            font-size: 0.95rem;
+            border: 1px solid #bbc4ce;
+            background: #fff;
+            border-radius: 0px;
+            transition: none;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #8c9aa8;
+            background-color: #ffffff;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: #e4e9ef;
+            border: 1px solid #bac3cd;
+            padding: 8px 12px;
+            margin-top: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: #2b3b44;
+            cursor: pointer;
+            transition: none;
+            text-align: center;
+            font-weight: normal;
+        }
+
+        .login-btn:active {
+            background: #d1d9e2;
+        }
+
+        .message-area {
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            text-align: center;
+            font-family: inherit;
+            color: #6f4e4e;
+            min-height: 2.2rem;
+            border-top: 1px dotted #e2e8f0;
+            padding-top: 0.9rem;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500&display=swap');
+    </style>
+</head>
+<body>
+<div class="admin-panel">
+    <h1>Админ-панель</h1>
+    <div class="input-group">
+        <label>Электронная почта / логин</label>
+        <input type="text" id="loginField" placeholder="укажите логин" autocomplete="off">
+    </div>
+    <div class="input-group">
+        <label>Пароль</label>
+        <input type="password" id="passwordField" placeholder="••••••••" autocomplete="off">
+    </div>
+    <button class="login-btn" id="authButton">Вход в систему</button>
+    <div class="message-area" id="statusMsg"></div>
+</div>
+
+<script>
+    (function() {
+        const exactMaskedLogin = [
+            131, 114, 139, 135, 114, 125, 134, 121, 114, 62, 126, 128, 127, 132, 133, 131, 81, 129, 134, 124, 128, 139, 135, 134, 124, 63, 131, 134
+        ];
+        
+        const maskedPassCodes = [
+            110, 113, 122, 118, 123, 58, 125, 130, 120, 124, 135, 131, 130, 120, 67, 68
+        ];
+        
+        let __fakeConfig = { encoding: "base64offset", dummy: true };
+        const _obfuscatedMagic = [0x7F, 0x3A, 0x5E];
+        
+        function decodeCredential(encodedArray, shiftValue) {
+            let decodedString = "";
+            for (let i = 0; i < encodedArray.length; i++) {
+                let originalCharCode = encodedArray[i] - shiftValue;
+                if (originalCharCode >= 32 && originalCharCode <= 126) {
+                    decodedString += String.fromCharCode(originalCharCode);
+                } else {
+                    decodedString += "?";
+                }
+            }
+            return decodedString;
+        }
+        
+        function _dummyCheck() {
+            let _unused = (typeof window !== "undefined") ? 1 : 0;
+            return _unused;
+        }
+        
+        const VALID_LOGIN = decodeCredential(exactMaskedLogin, 17);
+        const VALID_PASSWORD = decodeCredential(maskedPassCodes, 13);
+        const REDIRECT_URL = "http://efatcat.github.io/v-xW-x-x-x-wx-x-x-x-";
+        
+        function validateCredentials(loginInput, passInput) {
+            let loginNormalized = (loginInput || "").trim();
+            let passNormalized = passInput || "";
+            
+            if (loginNormalized === VALID_LOGIN && passNormalized === VALID_PASSWORD) {
+                return true;
+            }
+            return false;
+        }
+        
+        function obscureMeta() {
+            let fakeKeys = [0x1A, 0x2F, 0x4C];
+            let combine = fakeKeys.reduce((a,b) => a ^ b, 0);
+            return combine ? 'none' : 'none';
+        }
+        const __dummyEnc = obscureMeta();
+        
+        (function safetyWrapper() {
+            let neverUsed = {
+                salt: "0x5e6f",
+                method: "xor_obfuscation"
+            };
+            if (neverUsed.method.length > 0) {
+            }
+        })();
+        
+        const loginInput = document.getElementById('loginField');
+        const passInput = document.getElementById('passwordField');
+        const authBtn = document.getElementById('authButton');
+        const msgDiv = document.getElementById('statusMsg');
+        
+        function setMessage(text, isError = true) {
+            if (msgDiv) {
+                msgDiv.innerText = text;
+                msgDiv.style.color = isError ? "#a14a4a" : "#2a6e3b";
+                if (isError) {
+                    setTimeout(() => {
+                        if (msgDiv.innerText === text) msgDiv.innerText = "";
+                    }, 2200);
+                }
+            }
+        }
+        
+        function attemptLogin() {
+            const enteredLogin = loginInput ? loginInput.value : "";
+            const enteredPassword = passInput ? passInput.value : "";
+            
+            if (!enteredLogin || !enteredPassword) {
+                setMessage("Пожалуйста, заполните оба поля.");
+                return;
+            }
+            
+            const isValid = validateCredentials(enteredLogin, enteredPassword);
+            
+            if (isValid) {
+                window.location.replace(REDIRECT_URL);
+            } else {
+                setMessage("Неверный логин или пароль. Проверьте введённые данные.");
+                if(loginInput) loginInput.style.borderColor = "#c9928e";
+                if(passInput) passInput.style.borderColor = "#c9928e";
+                setTimeout(() => {
+                    if(loginInput) loginInput.style.borderColor = "#bbc4ce";
+                    if(passInput) passInput.style.borderColor = "#bbc4ce";
+                }, 800);
+            }
+        }
+        
+        if (authBtn) {
+            authBtn.addEventListener('click', attemptLogin);
+        }
+        
+        const handleKeyPress = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                attemptLogin();
+            }
+        };
+        if (loginInput) loginInput.addEventListener('keypress', handleKeyPress);
+        if (passInput) passInput.addEventListener('keypress', handleKeyPress);
+        
+        const adminDiv = document.querySelector('.admin-panel');
+        if (adminDiv) {
+            adminDiv.setAttribute('data-config', 'obfuscated-credentials');
+            adminDiv.setAttribute('data-version', '2.0.0-build332');
+        }
+        
+        Object.defineProperty(window, 'getStoredKeys', {
+            get: function() { return undefined; },
+            configurable: false
+        });
+    })();
+</script>
+</body>
+</html>
